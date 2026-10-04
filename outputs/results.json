@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
-  "run_id": "run_1791126678",
-  "run_timestamp": "2026-10-04T20:41:18.838127",
+  "run_id": "run_1791127429",
+  "run_timestamp": "2026-10-04T20:53:49.247663",
   "flood_date": "2026-08-26",
   "bbox": {
     "west": 85.2,
@@ -214,31 +214,16 @@
       "priority_rank": null
     }
   ],
-  "flow_path": {
-    "source_lon": 85.3,
-    "source_lat": 28.05,
-    "path_length_km": 1.41,
-    "path_flood_overlap_fraction": 0.0,
-    "settlements": [
-      {
-        "name": "Bahrabise Ward 4",
-        "centroid_lon": 85.30625,
-        "centroid_lat": 27.99375,
-        "distance_from_source_km": 0.54,
-        "in_flood_mask": false,
-        "elevation_m": 1300.0
-      }
-    ]
-  },
+  "flow_path": null,
   "stage_timings_s": {
     "stage1_ingest": 0.001,
-    "stage2_preprocess_and_masks": 0.004,
-    "stage3_detection": 0.097,
+    "stage2_preprocess_and_masks": 0.005,
+    "stage3_detection": 0.089,
     "stage4_debris": 0.0,
     "stage5_fusion_and_postprocess": 0.003,
     "stage6_damage": 0.0,
     "stage7_cutoff": 0.002,
-    "stage8_flowpath": 0.001
+    "stage8_flowpath": 0.0
   },
-  "total_runtime_s": 0.127
+  "total_runtime_s": 0.119
 }

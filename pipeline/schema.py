@@ -274,9 +274,6 @@ class SpaceTrackResults(BaseModel):
     stage_timings_s: dict[str, float] = {}
     total_runtime_s: float = 0.0
 
-    model_config = {
-        "json_encoders": {datetime: lambda v: v.isoformat(), date: lambda v: v.isoformat()}
-    }
 
     def all_numbers(self) -> dict[str, Any]:
         """
