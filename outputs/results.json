@@ -1,0 +1,244 @@
+{
+  "schema_version": "1.0.0",
+  "run_id": "run_1791126678",
+  "run_timestamp": "2026-10-04T20:41:18.838127",
+  "flood_date": "2026-08-26",
+  "bbox": {
+    "west": 85.2,
+    "south": 27.9,
+    "east": 85.4,
+    "north": 28.1
+  },
+  "pipeline_version": "0.1.0",
+  "python_version": "3.13.12",
+  "torch_version": "2.13.0+cpu",
+  "smp_version": "0.3.3",
+  "config_hash": "8868dd1ff2c6649e68978650cc691e8f9e00c25e3e44a0c1fec2c496ff1711fe",
+  "fallbacks_used": [],
+  "warnings": [],
+  "confidence_level": "high",
+  "provenance": {
+    "s1_pre": {
+      "product_id": "S1A_IW_GRDH_1SDV_20260814T001523_060540_0751E2_D412",
+      "acquisition_dt": "2026-08-14T00:15:23",
+      "relative_orbit": 121,
+      "pass_direction": "descending",
+      "platform": "S1A",
+      "polarizations": [
+        "VV",
+        "VH"
+      ],
+      "grd_url": null
+    },
+    "s1_post": {
+      "product_id": "S1A_IW_GRDH_1SDV_20260826T001524_060715_07572B_8C19",
+      "acquisition_dt": "2026-08-26T00:15:24",
+      "relative_orbit": 121,
+      "pass_direction": "descending",
+      "platform": "S1A",
+      "polarizations": [
+        "VV",
+        "VH"
+      ],
+      "grd_url": null
+    },
+    "s2_pre": {
+      "product_id": "S2B_MSIL2A_20260812T044709_N0511_R076_T45RVP",
+      "acquisition_dt": "2026-08-12T04:47:09",
+      "cloud_cover_aoi": 14.2,
+      "scl_valid_fraction": 0.88,
+      "bands_used": [
+        "B02",
+        "B03",
+        "B04",
+        "B08",
+        "B11",
+        "B12",
+        "SCL"
+      ]
+    },
+    "s2_post": {
+      "product_id": "S2A_MSIL2A_20260827T044711_N0511_R076_T45RVP",
+      "acquisition_dt": "2026-08-27T04:47:11",
+      "cloud_cover_aoi": 22.5,
+      "scl_valid_fraction": 0.76,
+      "bands_used": [
+        "B02",
+        "B03",
+        "B04",
+        "B08",
+        "B11",
+        "B12",
+        "SCL"
+      ]
+    },
+    "dem": {
+      "source": "COP-DEM GLO-30",
+      "tiles": [
+        "Copernicus_DSM_COG_10_N28_00_E085_00_DEM"
+      ],
+      "resolution": 30.0,
+      "crs": "EPSG:4326"
+    },
+    "osm": {
+      "snapshot_date": "2026-07-27",
+      "api_endpoint": "https://api.ohsome.org/v1/elements/geometry",
+      "building_count": 342,
+      "road_km": 48.6,
+      "bridge_count": 12,
+      "hospital_count": 2,
+      "town_count": 4
+    }
+  },
+  "model_meta": {
+    "architecture": "unet",
+    "encoder": "resnet34",
+    "weights_file": "unet_flood_v1.pt",
+    "ensemble_size": 1,
+    "threshold_conservative": 0.65,
+    "threshold_liberal": 0.4,
+    "val_iou_conservative": 0.69,
+    "val_iou_liberal": 0.74,
+    "tta_enabled": true,
+    "fallback_mode": false
+  },
+  "hazard": {
+    "flood_area_km2_conservative": 0.0,
+    "flood_area_km2_liberal": 0.0,
+    "debris_area_km2_conservative": 0.0,
+    "debris_area_km2_liberal": 0.0,
+    "permanent_water_km2": 0.0,
+    "uncertain_pixels_fraction": 0.0,
+    "debris_s1_signal_used": true,
+    "debris_coherence_used": false,
+    "debris_s2_bsi_used": false,
+    "debris_signals_available": 1
+  },
+  "damage": {
+    "buildings_likely_hit_conservative": 0,
+    "buildings_likely_hit_liberal": 0,
+    "buildings_possibly_hit_conservative": 0,
+    "buildings_possibly_hit_liberal": 0,
+    "road_km_likely_hit_conservative": 0.0,
+    "road_km_likely_hit_liberal": 0.0,
+    "bridges_likely_hit": 0,
+    "bridges_possibly_hit": 0
+  },
+  "cutoff": {
+    "settlements_cut_off_conservative": 0,
+    "settlements_cut_off_liberal": 0,
+    "settlements_possibly_cut_off": 0,
+    "settlements_still_connected": 1,
+    "settlements_unknown": 1,
+    "critical_bridge_osm_id": null,
+    "buildings_affected_by_critical_bridge": 0
+  },
+  "damaged_buildings": [
+    {
+      "osm_id": 1001,
+      "geometry_wkt": "POINT(85.30000000000001 27.99375)",
+      "damage_class_conservative": "not_hit",
+      "damage_class_liberal": "not_hit",
+      "overlap_fraction": 0.0,
+      "centroid_lon": 85.30000000000001,
+      "centroid_lat": 27.99375
+    },
+    {
+      "osm_id": 1002,
+      "geometry_wkt": "POINT(85.30312500000001 28.0)",
+      "damage_class_conservative": "not_hit",
+      "damage_class_liberal": "not_hit",
+      "overlap_fraction": 0.0,
+      "centroid_lon": 85.30312500000001,
+      "centroid_lat": 28.0
+    },
+    {
+      "osm_id": 1003,
+      "geometry_wkt": "POINT(85.215625 28.056250000000002)",
+      "damage_class_conservative": "not_hit",
+      "damage_class_liberal": "not_hit",
+      "overlap_fraction": 0.0,
+      "centroid_lon": 85.215625,
+      "centroid_lat": 28.056250000000002
+    }
+  ],
+  "damaged_roads": [
+    {
+      "osm_id": 2001,
+      "highway_type": "primary",
+      "length_m": 1200.0,
+      "damage_class_conservative": "not_hit",
+      "damage_class_liberal": "not_hit",
+      "overlap_fraction": 0.0,
+      "is_bridge": true
+    },
+    {
+      "osm_id": 2002,
+      "highway_type": "secondary",
+      "length_m": 3500.0,
+      "damage_class_conservative": "not_hit",
+      "damage_class_liberal": "not_hit",
+      "overlap_fraction": 0.0,
+      "is_bridge": false
+    }
+  ],
+  "settlements": [
+    {
+      "osm_id": 3001,
+      "name": "Bahrabise Ward 4",
+      "place_type": "village",
+      "centroid_lon": 85.30625,
+      "centroid_lat": 27.99375,
+      "building_count": 38,
+      "cutoff_state_conservative": "still_connected",
+      "cutoff_state_liberal": "still_connected",
+      "distance_to_hospital_pre_km": 1.2,
+      "distance_to_hospital_post_km": 1.2,
+      "detour_km": 0.0,
+      "failed_segment_osm_id": null,
+      "priority_rank": null
+    },
+    {
+      "osm_id": 3002,
+      "name": "Larcha Hamlet",
+      "place_type": "hamlet",
+      "centroid_lon": 85.215625,
+      "centroid_lat": 28.056250000000002,
+      "building_count": 12,
+      "cutoff_state_conservative": "unknown",
+      "cutoff_state_liberal": "unknown",
+      "distance_to_hospital_pre_km": null,
+      "distance_to_hospital_post_km": null,
+      "detour_km": null,
+      "failed_segment_osm_id": null,
+      "priority_rank": null
+    }
+  ],
+  "flow_path": {
+    "source_lon": 85.3,
+    "source_lat": 28.05,
+    "path_length_km": 1.41,
+    "path_flood_overlap_fraction": 0.0,
+    "settlements": [
+      {
+        "name": "Bahrabise Ward 4",
+        "centroid_lon": 85.30625,
+        "centroid_lat": 27.99375,
+        "distance_from_source_km": 0.54,
+        "in_flood_mask": false,
+        "elevation_m": 1300.0
+      }
+    ]
+  },
+  "stage_timings_s": {
+    "stage1_ingest": 0.001,
+    "stage2_preprocess_and_masks": 0.004,
+    "stage3_detection": 0.097,
+    "stage4_debris": 0.0,
+    "stage5_fusion_and_postprocess": 0.003,
+    "stage6_damage": 0.0,
+    "stage7_cutoff": 0.002,
+    "stage8_flowpath": 0.001
+  },
+  "total_runtime_s": 0.127
+}

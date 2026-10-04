@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SpaceTrack Flood Situation Report</title>
+<style>
+  @page {
+    size: A4 portrait;
+    margin: 10mm 12mm 10mm 12mm;
+  }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #1e293b;
+    margin: 0;
+    padding: 0;
+    font-size: 9.5pt;
+    line-height: 1.25;
+  }
+  .banner {
+    background-color: #fef08a;
+    color: #854d0e;
+    text-align: center;
+    font-size: 8pt;
+    font-weight: bold;
+    padding: 3px 0;
+    text-transform: uppercase;
+    border-radius: 3px;
+    margin-bottom: 6px;
+  }
+  .header {
+    border-bottom: 2px solid #0284c7;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .title {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+  }
+  .subtitle {
+    font-size: 8.5pt;
+    color: #64748b;
+  }
+  .headline-box {
+    background: #f0f9ff;
+    border-left: 4px solid #0284c7;
+    padding: 6px 10px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #0369a1;
+    font-size: 10pt;
+  }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 6px 8px;
+  }
+  .card-title {
+    font-size: 8.5pt;
+    font-weight: bold;
+    color: #334155;
+    text-transform: uppercase;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 3px;
+    margin-bottom: 4px;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+  }
+  th, td {
+    padding: 3px 4px;
+    text-align: left;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  th {
+    color: #475569;
+    font-weight: 600;
+  }
+  .badge-cutoff {
+    color: #b91c1c;
+    font-weight: bold;
+  }
+  .footer {
+    border-top: 1px solid #cbd5e1;
+    margin-top: 6px;
+    padding-top: 4px;
+    font-size: 6.5pt;
+    color: #64748b;
+    line-height: 1.2;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">⚠️ Educational prototype, not an operational tool.</div>
+
+<div class="header">
+  <div>
+    <h1 class="title">SPACETRACK FLOOD &bull; SITUATION REPORT</h1>
+    <div class="subtitle">Run ID: run_1791126678 | Event Date: 2026-08-26 | Generated: 2026-10-04 20:41 UTC</div>
+  </div>
+</div>
+
+<div class="headline-box">
+  0.0 km² flooded,
+  0 buildings likely hit,
+  0 villages cut off (0 possibly),
+  as of 2026-08-26.
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Hazard Summary (Conservative &bull; Liberal)</div>
+    <table>
+      <tr><td>Flood Inundation Area:</td><td><b>0.0 km²</b> &bull; 0.0 km²</td></tr>
+      <tr><td>Debris Fan Deposits:</td><td><b>0.0 km²</b> &bull; 0.0 km²</td></tr>
+      <tr><td>Permanent Water:</td><td><b>0.0 km²</b></td></tr>
+      <tr><td>Sensor Disagreement:</td><td><b>0.0%</b> of search domain</td></tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Infrastructure Exposure</div>
+    <table>
+      <tr><td>Buildings Likely Hit:</td><td><b>0</b> (cons) &bull; 0 (lib)</td></tr>
+      <tr><td>Buildings Possibly Hit:</td><td><b>0</b> (cons) &bull; 0 (lib)</td></tr>
+      <tr><td>Roads Cut / Blocked:</td><td><b>0.0 km</b> (cons) &bull; 0.0 km (lib)</td></tr>
+      <tr><td>Bridges Hit:</td><td><b>0 likely</b> &bull; 0 possibly</td></tr>
+    </table>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom: 8px;">
+  <div class="card-title">High Priority Cut-off Settlements (Rescue Evacuation Routing)</div>
+  <table>
+    <thead>
+      <tr>
+        <th>Rank</th>
+        <th>Settlement Name</th>
+        <th>Buildings</th>
+        <th>Pre-event Dist to Hosp</th>
+        <th>Status</th>
+        <th>Failed Road / Bridge ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      <tr>
+        <td>#1</td>
+        <td><b>Bahrabise Ward 4</b></td>
+        <td>38</td>
+        <td>1.2 km</td>
+        <td class="badge-cutoff">still_connected</td>
+        <td>Bridge/Segment Severed</td>
+      </tr>
+      
+      <tr>
+        <td>#2</td>
+        <td><b>Larcha Hamlet</b></td>
+        <td>12</td>
+        <td>N/A km</td>
+        <td class="badge-cutoff">unknown</td>
+        <td>Bridge/Segment Severed</td>
+      </tr>
+      
+    </tbody>
+  </table>
+</div>
+
+<div class="grid-2">
+  <div class="card">
+    <div class="card-title">Data Provenance & Reliability</div>
+    <div style="font-size: 7.5pt; color: #475569;">
+      <div><b>Sentinel-1:</b> Post: S1A_IW_GRDH_1SDV_20260826T001524_060715_07572B_8C19 (Rel. Orbit 121)</div>
+      <div><b>DEM:</b> COP-DEM GLO-30 (30 m resolution)</div>
+      <div><b>OSM Snapshot:</b> 2026-07-27 (Pre-event guaranteed)</div>
+      <div><b>Model:</b> unet (TTA: True) &bull; Confidence: high</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Known Limitations & Constraints</div>
+    <div style="font-size: 7pt; color: #64748b; line-height: 1.2;">
+      10 m SAR pixels cannot resolve footpaths or single mud-brick huts.
+      Steep Himalayan slopes cause radar layover/shadow (filtered by slope &le; 18&deg;).
+      Debris detection is a 3-signal heuristic without labeled ground truth.
+      Missing OSM roads do not prove absence of footpaths.
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <b>Attribution:</b> Contains modified Copernicus Sentinel data 2026. Produced using Copernicus WorldDEM-30 &copy; DLR e.V. 2010&ndash;2014 and &copy; Airbus Defence and Space GmbH 2014&ndash;2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. &copy; OpenStreetMap contributors. Kuro Siwo (Bountos et al., 2024). Sen1Floods11 (Bonafilia et al., 2020).
+</div>
+
+</body>
+</html>

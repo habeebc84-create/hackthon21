@@ -1,0 +1,16 @@
+name: spacetrack-flood
+channels:
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - gdal>=3.7.0
+  - proj>=9.2.0
+  - geos>=3.11.0
+  - pytorch>=2.1.0
+  - torchvision>=0.16.0
+  - cpuonly # or cudatoolkit
+  - pip:
+    - -r requirements.txt

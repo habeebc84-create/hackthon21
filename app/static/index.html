@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpaceTrack Flood | Satellite Rescue Decision Dashboard</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  
+  <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+
+  <!-- Top Educational Prototype Banner -->
+  <header class="banner-top">
+    <div class="banner-content">
+      <span class="banner-icon">⚠️</span>
+      <span id="txt-prototype" class="banner-text">EDUCATIONAL PROTOTYPE &bull; NOT AN OPERATIONAL TOOL</span>
+      <span class="banner-tag">HACKATHON BUILD</span>
+    </div>
+  </header>
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <div class="brand-logo">
+        <span class="brand-icon">🛰️</span>
+        <div class="brand-text">
+          <span class="brand-name">SpaceTrack Flood</span>
+          <span class="brand-sub">RAPID SATELLITE INUNDATION &amp; EVACUATION INTELLIGENCE</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="nav-center">
+      <div class="status-pill ready" id="status-pill">
+        <span class="pulse-dot"></span>
+        <span id="status-text">PIPELINE READY</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <div class="lang-selector">
+        <button class="lang-btn active" id="btn-lang-en" onclick="setLanguage('en')">EN</button>
+        <button class="lang-btn" id="btn-lang-ne" onclick="setLanguage('ne')">नेपाली</button>
+      </div>
+      <a href="/reports" target="_blank" class="nav-action-btn" id="btn-nav-report">
+        <span>📄</span> <span id="txt-nav-report">Report</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Fallback Warning Ribbon -->
+  <div class="fallback-ribbon" id="fallback-ribbon" style="display: none;">
+    <span class="warning-icon">🔔</span>
+    <span id="fallback-message">Active Fallback Mode: S2 cloud occluded &bull; Operating in Sentinel-1 All-Weather Radar Priority Mode</span>
+  </div>
+
+  <!-- Main Container -->
+  <main class="dashboard-grid">
+    
+    <!-- LEFT PANEL: Tasking & Parameters -->
+    <aside class="panel panel-left">
+      <div class="panel-header">
+        <h2 id="txt-mission-tasking">Mission Tasking</h2>
+        <span class="panel-badge">STAGE 1-8</span>
+      </div>
+
+      <div class="panel-body">
+        
+        <!-- Preset selector -->
+        <div class="form-group">
+          <label id="txt-preset-label">Event Preset</label>
+          <select id="preset-selector" class="custom-select" onchange="applyPreset()">
+            <option value="trishuli">Trishuli River, Nepal (Aug 2026)</option>
+            <option value="melamchi">Melamchi Debris Flow, Nepal (Jun 2021)</option>
+            <option value="chamoli">Chamoli Glacier Outburst, India (Feb 2021)</option>
+            <option value="custom">Custom Mountain AOI</option>
+          </select>
+        </div>
+
+        <!-- BBox Inputs -->
+        <div class="form-group">
+          <label id="txt-bbox-label">Target Bounding Box (W, S, E, N)</label>
+          <div class="bbox-grid">
+            <div class="input-wrap">
+              <span class="input-tag">W</span>
+              <input type="number" id="bbox-w" step="0.01" value="85.200">
+            </div>
+            <div class="input-wrap">
+              <span class="input-tag">S</span>
+              <input type="number" id="bbox-s" step="0.01" value="27.900">
+            </div>
+            <div class="input-wrap">
+              <span class="input-tag">E</span>
+              <input type="number" id="bbox-e" step="0.01" value="85.400">
+            </div>
+            <div class="input-wrap">
+              <span class="input-tag">N</span>
+              <input type="number" id="bbox-n" step="0.01" value="28.100">
+            </div>
+          </div>
+        </div>
+
+        <!-- Date Picker -->
+        <div class="form-group">
+          <label id="txt-date-label">Flood Event Date</label>
+          <input type="date" id="flood-date" class="custom-input" value="2026-08-26">
+        </div>
+
+        <!-- Options -->
+        <div class="options-box">
+          <label class="checkbox-label">
+            <input type="checkbox" id="chk-baseline">
+            <span id="txt-baseline-opt">Threshold Baseline (Ablation)</span>
+          </label>
+          <label class="checkbox-label">
+            <input type="checkbox" id="chk-lowband">
+            <span id="txt-lowband-opt">Low-Bandwidth Mode</span>
+          </label>
+        </div>
+
+        <!-- Run Action -->
+        <button id="btn-run" class="btn-primary" onclick="triggerRun()">
+          <span class="btn-icon">⚡</span>
+          <span id="txt-btn-run">RUN PIPELINE</span>
+        </button>
+
+        <!-- Stage Progress & Timings Log -->
+        <div class="timings-card" id="timings-card">
+          <div class="timings-title">
+            <span id="txt-timings-header">Stage Telemetry</span>
+            <span class="timing-badge" id="timing-total">0.14s</span>
+          </div>
+          <ul class="timings-list" id="timings-list">
+            <li><span>Stage 1: Ingestion &amp; Orbit</span> <span class="time-val" id="t-s1">0.02s</span></li>
+            <li><span>Stage 2: Speckle &amp; Terrain Masks</span> <span class="time-val" id="t-s2">0.03s</span></li>
+            <li><span>Stage 3: 9-Ch U-Net Ensemble</span> <span class="time-val" id="t-s3">0.04s</span></li>
+            <li><span>Stage 4: Multi-Sensor Debris</span> <span class="time-val" id="t-s4">0.01s</span></li>
+            <li><span>Stage 5: Optical Fusion &amp; Clean</span> <span class="time-val" id="t-s5">0.01s</span></li>
+            <li><span>Stage 6: Exposure &amp; Damage</span> <span class="time-val" id="t-s6">0.01s</span></li>
+            <li><span>Stage 7: Cut-off Dijkstra Routing</span> <span class="time-val" id="t-s7">0.01s</span></li>
+            <li><span>Stage 8: D8 Flow Path Tracing</span> <span class="time-val" id="t-s8">0.01s</span></li>
+          </ul>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- CENTER PANEL: Interactive Spatial Map -->
+    <section class="panel panel-center">
+      <div class="map-controls-bar">
+        <div class="layer-toggles">
+          <button class="layer-chip active" id="chip-flood" onclick="toggleLayer('flood')">
+            <span class="chip-color" style="background:#2b83ba;"></span>
+            <span id="txt-chip-flood">Flood</span>
+          </button>
+          <button class="layer-chip active" id="chip-debris" onclick="toggleLayer('debris')">
+            <span class="chip-color" style="background:#d97706;"></span>
+            <span id="txt-chip-debris">Debris</span>
+          </button>
+          <button class="layer-chip active" id="chip-damaged" onclick="toggleLayer('damaged')">
+            <span class="chip-color" style="background:#ea580c;"></span>
+            <span id="txt-chip-damage">Damage</span>
+          </button>
+          <button class="layer-chip active" id="chip-cutoff" onclick="toggleLayer('cutoff')">
+            <span class="chip-color" style="background:#dc2626;"></span>
+            <span id="txt-chip-cutoff">Cut-Off</span>
+          </button>
+          <button class="layer-chip active" id="chip-flow" onclick="toggleLayer('flow')">
+            <span class="chip-color" style="background:#f59e0b;"></span>
+            <span id="txt-chip-flow">Flow Path</span>
+          </button>
+        </div>
+
+        <div class="map-actions">
+          <button class="icon-btn" onclick="toggleBasemap()" title="Toggle Satellite/Dark Basemap">🛰️</button>
+          <button class="icon-btn" onclick="resetMapView()" title="Reset to AOI">🎯</button>
+        </div>
+      </div>
+
+      <!-- Map Container -->
+      <div id="map-container"></div>
+
+      <!-- Map Legend Bar -->
+      <div class="map-legend-overlay">
+        <div class="legend-item"><span class="legend-color" style="background:#2b83ba;"></span> Flood Inundation</div>
+        <div class="legend-item"><span class="legend-color" style="background:#d97706;"></span> Debris Deposits</div>
+        <div class="legend-item"><span class="legend-color" style="background:#dc2626;"></span> Cut-Off Settlement</div>
+        <div class="legend-item"><span class="legend-color" style="background:#16a34a;"></span> Connected Settlement</div>
+        <div class="legend-item"><span class="legend-color" style="background:#94a3b8;"></span> Unknown Pre-event Road</div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Emergency Metrics & Priority Queue -->
+    <aside class="panel panel-right">
+      <div class="panel-header">
+        <h2 id="txt-rescue-overview">Emergency Metrics</h2>
+        <span class="panel-badge-pill" id="badge-confidence">HIGH CONFIDENCE</span>
+      </div>
+
+      <div class="panel-body">
+        
+        <!-- Confidence Slider -->
+        <div class="confidence-control">
+          <div class="slider-header">
+            <span id="txt-confidence-label">Decision Threshold</span>
+            <span class="slider-val" id="val-confidence">0.65</span>
+          </div>
+          <input type="range" id="slider-confidence" min="0.20" max="0.90" step="0.05" value="0.65" oninput="onConfidenceChange(this.value)">
+          <div class="slider-ticks">
+            <span>Liberal (0.40)</span>
+            <span>Conservative (0.65)</span>
+          </div>
+        </div>
+
+        <!-- 4 Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-tile">
+            <div class="metric-top">
+              <span class="metric-label" id="txt-m-flood">Flood Area</span>
+              <span class="metric-icon">🌊</span>
+            </div>
+            <div class="metric-number" id="m-flood-val">0.00 km²</div>
+            <div class="metric-sub" id="m-flood-sub">Range: 0.0 - 0.0 km²</div>
+          </div>
+
+          <div class="metric-tile">
+            <div class="metric-top">
+              <span class="metric-label" id="txt-m-debris">Debris Fans</span>
+              <span class="metric-icon">🌋</span>
+            </div>
+            <div class="metric-number" id="m-debris-val">0.00 km²</div>
+            <div class="metric-sub" id="m-debris-sub">3-Signal Heuristic</div>
+          </div>
+
+          <div class="metric-tile">
+            <div class="metric-top">
+              <span class="metric-label" id="txt-m-buildings">Buildings Hit</span>
+              <span class="metric-icon">🏚️</span>
+            </div>
+            <div class="metric-number" id="m-buildings-val">0</div>
+            <div class="metric-sub" id="m-buildings-sub">OSM pre-event verified</div>
+          </div>
+
+          <div class="metric-tile critical">
+            <div class="metric-top">
+              <span class="metric-label" id="txt-m-cutoff">Villages Cut Off</span>
+              <span class="metric-icon">🚨</span>
+            </div>
+            <div class="metric-number" id="m-cutoff-val">0</div>
+            <div class="metric-sub" id="m-cutoff-sub">0 possibly cut off</div>
+          </div>
+        </div>
+
+        <!-- Critical Failure Point Card -->
+        <div class="critical-bridge-card" id="critical-bridge-card">
+          <div class="critical-badge">CRITICAL CHOKEPOINT IDENTIFIED</div>
+          <div class="critical-desc">
+            <b id="txt-chokepoint-title">Severed Bridge OSM ID:</b> <span id="val-critical-bridge">None</span><br>
+            <span id="txt-chokepoint-impact">Total Isolated Population Proxy:</span> <b id="val-critical-impact">0 buildings</b>
+          </div>
+        </div>
+
+        <!-- Evacuation Priority Queue -->
+        <div class="priority-section">
+          <div class="section-title-bar">
+            <h3 id="txt-queue-title">🚨 Evacuation Priority Queue</h3>
+            <span class="badge-count" id="badge-villages-count">0 Villages</span>
+          </div>
+
+          <div class="priority-table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Settlement</th>
+                  <th>Buildings</th>
+                  <th>Hosp Dist</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="priority-table-body">
+                <tr><td colspan="5" class="empty-state">No cut-off villages detected.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Export Actions -->
+        <div class="export-actions">
+          <button class="btn-secondary" onclick="exportResultsJSON()">
+            <span>💾</span> <span>results.json</span>
+          </button>
+          <a href="/reports" target="_blank" class="btn-secondary">
+            <span>📄</span> <span>PDF Report</span>
+          </a>
+        </div>
+
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Legal & Scientific Attribution Footer -->
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <p><b>Attributions:</b> Contains modified Copernicus Sentinel data 2026. Produced using Copernicus WorldDEM-30 © DLR e.V. 2010–2014 and © Airbus Defence and Space GmbH 2014–2018 provided under COPERNICUS by the European Union and ESA; all rights reserved. © OpenStreetMap contributors. Kuro Siwo (Bountos et al., 2024). Sen1Floods11 (Bonafilia et al., 2020).</p>
+      <p class="footer-disclaimer"><b>Disclaimer:</b> Educational prototype, not an operational tool. No victim imagery is used or collected.</p>
+    </div>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

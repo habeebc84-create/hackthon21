@@ -1,0 +1,184 @@
+# configs/default.yaml
+# =====================
+# SpaceTrack Flood — master configuration
+# Every threshold and tunable parameter lives here.
+# Pipeline modules read this via pipeline/config.py.
+
+meta:
+  pipeline_version: "0.1.0"
+  schema_version: "1.0.0"
+
+paths:
+  data_dir: "data"
+  cache_dir: "data/cache"
+  raw_dir:   "data/raw"
+  proc_dir:  "data/processed"
+  results_dir: "outputs"
+  weights_dir: "model/weights"
+
+# ── Credentials (overridden by env vars CDSE_USER, CDSE_PASS) ──────────────
+credentials:
+  cdse_user: ""
+  cdse_pass: ""
+
+# ── Ingest ──────────────────────────────────────────────────────────────────
+ingest:
+  s1:
+    preferred_days_apart: 12       # days between pre/post acquisitions
+    fallback_days_apart:   6       # accept if 12-day not available
+    max_days_after_flood:  5       # post-event scene must be within N days
+    max_days_before_flood: 30      # pre-event scene window
+    require_same_orbit:    true
+    polarizations: ["VV", "VH"]
+    product_type: "GRD"
+    mode: "IW"
+  s2:
+    max_cloud_cover_aoi: 50        # % — skip S2 if cloudier
+    max_days_before_flood: 30
+    max_days_after_flood:  10
+    required_bands: ["B02","B03","B04","B08","B11","B12","SCL"]
+  dem:
+    source: "COP-DEM_GLO-30"
+    resolution_m: 30
+    buffer_deg: 0.1                # extra padding around bbox
+  osm:
+    snapshot_date: "2026-07-27"    # MUST be before flood date — hard-checked in code
+    api_url: "https://api.ohsome.org/v1"
+    feature_types:
+      - buildings
+      - highways
+      - bridges
+      - hospitals
+      - places
+    timeout_s: 120
+
+# ── Preprocessing ────────────────────────────────────────────────────────────
+preprocess:
+  s1:
+    output_resolution_m: 10
+    speckle_filter: "refined_lee"  # "refined_lee" | "multitemporal_lee"
+    filter_window_size: 7
+    calibration_type: "gamma0"     # terrain-flattened gamma0 RTC
+    convert_to_db: true
+    snap_graph_template: "configs/snap_rtc.xml"  # fallback: python RTC
+  dem:
+    fill_nodata: true
+    smooth_iterations: 1
+
+# ── Masks ────────────────────────────────────────────────────────────────────
+masks:
+  slope_threshold_deg: 15         # exclude slope > this for water
+  hand_threshold_m: 30            # Hydrologically-Adjusted Normalised Diff
+  hand_buffer_m: 500              # buffer around river channel for HAND calc
+  min_river_order: 4              # Strahler order for river mask
+  layover_shadow_db_threshold: -20.0
+
+# ── Detection model ──────────────────────────────────────────────────────────
+detection:
+  architecture: "unet"
+  encoder: "resnet34"
+  encoder_weights: "imagenet"
+  in_channels: 9                  # pre-VV, pre-VH, post-VV, post-VH, diff-VV, diff-VH, log-ratio, slope, HAND
+  num_classes: 3                  # 0=background, 1=permanent_water, 2=flood
+  patch_size: 512
+  patch_overlap: 64
+  batch_size: 8
+  epochs: 50
+  lr: 0.0003
+  loss_weights:
+    dice: 0.5
+    focal: 0.5
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  augmentation:
+    flip: true
+    rotate_90: true
+    speckle_noise_std: 0.05
+    brightness_shift_db: 1.5
+  ensemble_size: 3                # number of models in ensemble
+  tta_enabled: true               # test-time augmentation
+  threshold_conservative: 0.6    # tuned on validation F1
+  threshold_liberal: 0.4
+  min_blob_area_px: 10            # remove objects smaller than this
+  hole_fill_area_px: 20           # fill holes smaller than this
+
+# ── Debris detection ─────────────────────────────────────────────────────────
+debris:
+  river_corridor_buffer_m: 200    # search zone around river channel
+  min_signals_agree: 2            # need at least 2 of 3 signals
+  s1:
+    vh_logratio_threshold: 3.0    # dB change indicating roughness increase
+    backscatter_increase_db: 2.0
+  coherence:
+    threshold: 0.3                # below = coherence loss
+    enabled: false                # requires S1 SLC — set true if SLC available
+  s2_bsi:
+    threshold: 0.1                # BSI change indicating bare soil
+    min_clear_fraction: 0.3       # skip if < this fraction of AOI is clear
+
+# ── Fusion & post-processing ─────────────────────────────────────────────────
+fusion:
+  s2_mndwi_threshold: 0.0
+  s2_bsi_threshold: 0.0
+  cloud_dilation_px: 5
+  disagree_label: "uncertain"
+  min_blob_px: 10                 # connectivity filter minimum size
+  max_hole_px: 20
+  require_river_connectivity: true  # keep only blobs touching river network
+
+# ── Damage assessment ────────────────────────────────────────────────────────
+damage:
+  buffer_m: 15                    # positional uncertainty buffer
+  likely_hit_threshold: 0.5       # fraction of feature inside hazard
+  possibly_hit_threshold: 0.1
+  bridge_default_class: "possibly_hit"  # bridges in corridor default to this
+
+# ── Cutoff analysis ──────────────────────────────────────────────────────────
+cutoff:
+  settlement_snap_distance_m: 500  # max distance to snap settlement to road node
+  min_building_count: 1            # minimum buildings to count as settlement
+  place_types:
+    - village
+    - hamlet
+  hospital_amenity: hospital
+  town_place_types:
+    - town
+    - city
+  max_detour_km: 200               # beyond this, mark as effectively cut off
+
+# ── Flow path (bonus) ────────────────────────────────────────────────────────
+flowpath:
+  depression_fill_method: "fill"   # "fill" or "breach"
+  flow_algorithm: "D8"
+  hand_buffer_m: 100               # corridor width for listing settlements
+
+# ── Dashboard ────────────────────────────────────────────────────────────────
+dashboard:
+  port: 8501
+  map_center_zoom: 11
+  default_basemap: "CartoDB.Positron"
+  low_bandwidth_mode: false
+  colour:
+    flood:    "#1565C0"   # blue
+    debris:   "#A0522D"   # sienna/brown
+    cutoff:   "#C62828"   # red
+    uncertain: "#9E9E9E"  # grey
+    connected: "#2E7D32"  # green
+
+# ── Report ───────────────────────────────────────────────────────────────────
+report:
+  max_priority_villages: 5
+  font_en: "NotoSans"
+  font_ne: "NotoSansDevanagari"
+  page_size: "A4"
+  logo_path: "app/templates/logo.png"
+
+# ── Attribution strings (immutable) ─────────────────────────────────────────
+attribution:
+  sentinel: "Contains modified Copernicus Sentinel data 2026."
+  dem: "Produced using Copernicus WorldDEM-30 © DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA; all rights reserved."
+  osm: "© OpenStreetMap contributors."
+  kuro_siwo: "Bountos et al., 2024 (Kuro Siwo dataset)."
+  sen1floods11: "Bonafilia et al., CVPR Workshops 2020 (Sen1Floods11 dataset)."
+  emsr927: "European Union, Copernicus Emergency Management Service data."
+  prototype_banner: "Educational prototype, not an operational tool."
